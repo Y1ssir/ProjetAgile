@@ -3,7 +3,7 @@
 Suivez ces étapes pour cloner et lancer le projet sur votre machine :
 1. **Cloner le projet**
    ```bash
-   git clone <url-du-repo>
+   git clone https://github.com/Y1ssir/ProjetAgile.git
    cd ProjetAgile
 2. **Créer et activer l'environnement virtuel**
    ```bash

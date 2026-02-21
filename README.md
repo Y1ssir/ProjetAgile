@@ -16,10 +16,10 @@ Suivez ces étapes pour cloner et lancer le projet sur votre machine :
    ```bash
    pip install -r requirements.txt
 4. **Initialiser la base de données locale**
-  ```bash
+   ```bash
    python manage.py migrate
    python manage.py createsuperuser
-```
+   
 5. **Lancer le serveur**
-  ```bash
+   ```bash
    python manage.py runserver

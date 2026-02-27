@@ -27,5 +27,5 @@ Suivez ces étapes pour cloner et lancer le projet sur votre machine :
    python manage.py runserver
 
 ## 👥 Contributors
-- **Yassir Jaber** (@Y1ssir) 
-- **Ammar ELmeliani** (@Username)
+- **Yassir Jaber** (@Y1ssir)
+- **Ammar ELmeliani** (@EL-Star456) [https://github.com/EL-Star456]

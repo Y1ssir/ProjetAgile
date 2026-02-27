@@ -25,3 +25,7 @@ Suivez ces étapes pour cloner et lancer le projet sur votre machine :
 5. **Lancer le serveur**
    ```bash
    python manage.py runserver
+
+## 👥 Contributors
+- **Yassir Jaber** (@Y1ssir) 
+- **Ammar ELmeliani** (@Username)

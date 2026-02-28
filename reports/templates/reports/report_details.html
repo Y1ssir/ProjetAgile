@@ -1,0 +1,13 @@
+<h1>{{ report.title }}</h1>
+<div style="background: #e8f5e9; border-left: 5px solid #2e7d32; padding: 15px; margin-top: 20px;">
+    <h4>🌱 Conseil Éco-Responsable (IA) :</h4>
+    <p><em>{{ advice }}</em></p>
+</div>
+{% if report.image %}
+    <img src="{{ report.image.url }}" style="max-width: 500px;">
+{% endif %}
+<p><strong>Description :</strong> {{ report.description }}</p>
+<p><strong>Lieu :</strong> {{ report.location }}</p>
+<p><strong>Statut :</strong> {{ report.get_status_display }}</p>
+
+<a href="{% url 'reports:report_list' %}">Retour à la liste</a>

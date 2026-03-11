@@ -6,4 +6,4 @@ from .models import Report
 class ReportAdmin(admin.ModelAdmin):
     list_display = ('title', 'category', 'author', 'created_at')
     list_filter = ('category', 'created_at') 
-    search_fields = ('title', 'description')
+    search_fields = ('title', 'description','ai_advice')

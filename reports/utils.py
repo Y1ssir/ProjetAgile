@@ -13,11 +13,11 @@ def get_eco_advice(category, description):
                 "Content-Type": "application/json",
             },
             data=json.dumps({
-                "model": "google/gemini-2.0-flash-001", # Modèle gratuit ou peu coûteux
+                "model": "google/gemini-2.0-flash-001",
                 "messages": [{"role": "user", "content": prompt}]
             })
         )
         data = response.json()
         return data['choices'][0]['message']['content']
     except Exception:
-        return "Pensez à éteindre les lumières et à réduire votre consommation d'eau !"
+        return "On a pas encore ajoutee l'IA !"

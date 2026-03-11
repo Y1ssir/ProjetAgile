@@ -24,14 +24,12 @@ class Report(models.Model):
     ]
 
     title = models.CharField(max_length=150, verbose_name="Titre du signalement")
-    description = models.TextField(verbose_name="Description du problème")
+    description = models.TextField(verbose_name="Description du problème",null=True,blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='OTHER')
-    location = models.CharField(max_length=255, verbose_name="Localisation (adresse ou GPS)")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    image = models.ImageField(upload_to='reports/%Y/%m/%d/', verbose_name="Photo du déchet")
-    
+    image = models.ImageField(upload_to='reports/%Y/%m/%d/',null=True ,blank=True,verbose_name="Photo du déchet")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
-    
+    ai_advice = models.TextField(null=True, blank=True, verbose_name="Conseil de l'IA")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reports")
 
     def __str__(self):

@@ -27,12 +27,7 @@ class Report(models.Model):
     description = models.TextField(verbose_name="Description du problème",null=True,blank=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='OTHER')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-<<<<<<< HEAD
     image = models.ImageField(upload_to='reports/%Y/%m/%d/', verbose_name="Photo du déchet", blank=True, null=True)
-    
-=======
-    image = models.ImageField(upload_to='reports/%Y/%m/%d/',null=True ,blank=True,verbose_name="Photo du déchet")
->>>>>>> dc2952555a7f668d07228d190be5099368d59bf0
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
     ai_advice = models.TextField(null=True, blank=True, verbose_name="Conseil de l'IA")
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reports")

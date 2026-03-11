@@ -46,11 +46,7 @@ def report_list(request):
 
 # ✅ UNE SEULE définition de report_detail (bug corrigé : tu en avais 2 !)
 def report_detail(request, pk):
-<<<<<<< HEAD
     report = get_object_or_404(Report, pk=pk)
-=======
-    report = get_object_or_404(Report, pk=pk)    
->>>>>>> dc2952555a7f668d07228d190be5099368d59bf0
     advice = get_eco_advice(report.get_category_display(), report.description)
     return render(request, 'reports/report_detail.html', {
         'report': report,

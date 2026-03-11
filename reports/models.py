@@ -28,7 +28,7 @@ class Report(models.Model):
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='OTHER')
     location = models.CharField(max_length=255, verbose_name="Localisation (adresse ou GPS)")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='PENDING')
-    image = models.ImageField(upload_to='reports/%Y/%m/%d/', verbose_name="Photo du déchet")
+    image = models.ImageField(upload_to='reports/%Y/%m/%d/', verbose_name="Photo du déchet", blank=True, null=True)
     
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="Date de création")
     

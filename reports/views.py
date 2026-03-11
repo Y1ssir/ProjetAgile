@@ -34,12 +34,7 @@ def report_list(request):
         'categories': categories
     })
 def report_detail(request, pk):
-    report = get_object_or_404(Report, pk=pk)
-    return render(request, 'reports/report_detail.html', {'report': report})
-def report_detail(request, pk):
-    report = get_object_or_404(Report, pk=pk)
-    
-    # Appel à l'IA d'OpenRouter
+    report = get_object_or_404(Report, pk=pk)    
     advice = get_eco_advice(report.get_category_display(), report.description)
     
     return render(request, 'reports/report_detail.html', {

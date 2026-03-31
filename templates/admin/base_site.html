@@ -1,0 +1,100 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | Campus Éco-IA Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        🌱 Campus Éco-IA — Admin
+    </a>
+</h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    /* ---- COULEURS VERTES ---- */
+    #header {
+        background: linear-gradient(135deg, #1B4332, #2D6A4F) !important;
+        color: white !important;
+    }
+    #header a, #header a:visited {
+        color: #95D5B2 !important;
+    }
+    div.breadcrumbs {
+        background: #2D6A4F !important;
+        color: #D8F3DC !important;
+    }
+    div.breadcrumbs a {
+        color: #95D5B2 !important;
+    }
+    /* ---- SIDEBAR ---- */
+    #nav-sidebar {
+        background: #1B4332 !important;
+    }
+    #nav-sidebar a {
+        color: #D8F3DC !important;
+    }
+    #nav-sidebar a:hover {
+        background: #2D6A4F !important;
+    }
+    /* ---- BOUTONS ---- */
+    .button, input[type=submit], input[type=button], .submit-row input {
+        background: #2D6A4F !important;
+        border-color: #1B4332 !important;
+        color: white !important;
+        border-radius: 6px !important;
+    }
+    .button:hover, input[type=submit]:hover {
+        background: #1B4332 !important;
+    }
+    .button.default {
+        background: #40916C !important;
+    }
+    /* ---- MODULES ---- */
+    .module caption, .inline-group h2 {
+    background: #2D6A4F !important;
+    color: white !important;
+    text-shadow: none !important;
+    font-weight: bold !important;
+}
+/* Texte des sections visible */
+.app-reports th, .app-auth th {
+    color: white !important;
+}
+    /* ---- LIENS ---- */
+    a:link, a:visited {
+        color: #2D6A4F !important;
+    }
+    /* ---- TABLEAU ---- */
+    #result_list thead th {
+        background: #2D6A4F !important;
+        color: white !important;
+    }
+    #result_list tr:hover {
+        background: #F0FFF4 !important;
+    }
+    /* ---- MESSAGES ---- */
+    .success {
+        background: #D8F3DC !important;
+        color: #1B4332 !important;
+    }
+    /* ---- INDEX ---- */
+    .app-reports .section:nth-child(1) {
+        border-left: 4px solid #40916C !important;
+    }
+</style>
+{% endblock %}
+{% block nav-global %}
+<div style="background:#1B4332; padding:10px 20px;">
+    <a href="/admin/dashboard/" 
+       style="color:#95D5B2; font-weight:bold; text-decoration:none; font-size:14px;">
+        📊 Tableau de bord
+    </a>
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <a href="/reports/" 
+       style="color:#95D5B2; text-decoration:none; font-size:14px;">
+        🌱 Voir le site
+    </a>
+</div>
+{% endblock %}

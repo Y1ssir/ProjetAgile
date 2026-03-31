@@ -1,0 +1,219 @@
+{% extends "reports/base.html" %}
+
+{% block title %}Tableau de bord Admin{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h2 class="fw-bold text-success mb-0"><i class="fas fa-chart-bar me-2"></i>Tableau de bord</h2>
+        <small class="text-muted">Vue d'ensemble des signalements</small>
+    </div>
+    <a href="{% url 'reports:report_create' %}" class="btn btn-eco">
+        <i class="fas fa-plus me-2"></i>Nouveau signalement
+    </a>
+</div>
+
+{# ---- STATS CARDS ---- #}
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card p-3 border-0" style="background: linear-gradient(135deg, #2d6a4f, #40916c);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-white opacity-75 small mb-0">Total</p>
+                    <h2 class="text-white fw-bold mb-0">{{ stats.total }}</h2>
+                </div>
+                <div style="font-size: 2.5rem; opacity: 0.6;">📋</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 border-0" style="background: linear-gradient(135deg, #e67e22, #f39c12);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-white opacity-75 small mb-0">En attente</p>
+                    <h2 class="text-white fw-bold mb-0">{{ stats.pending }}</h2>
+                </div>
+                <div style="font-size: 2.5rem; opacity: 0.6;">⏳</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 border-0" style="background: linear-gradient(135deg, #2980b9, #3498db);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-white opacity-75 small mb-0">En traitement</p>
+                    <h2 class="text-white fw-bold mb-0">{{ stats.in_progress }}</h2>
+                </div>
+                <div style="font-size: 2.5rem; opacity: 0.6;">🔄</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card p-3 border-0" style="background: linear-gradient(135deg, #27ae60, #2ecc71);">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="text-white opacity-75 small mb-0">Résolus</p>
+                    <h2 class="text-white fw-bold mb-0">{{ stats.resolved }}</h2>
+                </div>
+                <div style="font-size: 2.5rem; opacity: 0.6;">✅</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ---- GRAPHIQUES ---- #}
+<div class="row g-4 mb-4">
+    {# Graphique Donut - Statuts #}
+    <div class="col-md-5">
+        <div class="card p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-chart-pie me-2 text-success"></i>Répartition par statut</h6>
+            <canvas id="statusChart" height="250"></canvas>
+        </div>
+    </div>
+
+    {# Graphique Barres - Catégories #}
+    <div class="col-md-7">
+        <div class="card p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-chart-bar me-2 text-success"></i>Signalements par catégorie</h6>
+            <canvas id="categoryChart" height="250"></canvas>
+        </div>
+    </div>
+</div>
+
+{# ---- TAUX DE RÉSOLUTION ---- #}
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-trophy me-2 text-success"></i>Taux de résolution</h6>
+            {% if stats.total > 0 %}
+                {% with taux=stats.resolved|floatformat:0 %}
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="small">Progression globale</span>
+                    <span class="fw-bold text-success">{{ stats.resolution_rate }}%</span>
+                </div>
+                <div class="progress" style="height: 12px; border-radius: 10px;">
+                    <div class="progress-bar bg-success" style="width: {{ stats.resolution_rate }}%; border-radius: 10px;"></div>
+                </div>
+                {% endwith %}
+            {% else %}
+                <p class="text-muted small">Aucun signalement pour l'instant</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card p-4">
+            <h6 class="fw-bold mb-3"><i class="fas fa-clock me-2 text-success"></i>Dernière activité</h6>
+            {% for report in recent_reports %}
+            <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                <div>
+                    <small class="fw-semibold">{{ report.title|truncatechars:30 }}</small><br>
+                    <small class="text-muted">{{ report.author.username }} — {{ report.created_at|timesince }}</small>
+                </div>
+                <span class="badge" style="background: {% if report.status == 'PENDING' %}#f39c12{% elif report.status == 'IN_PROGRESS' %}#3498db{% else %}#27ae60{% endif %}; color: white; font-size: 0.7rem;">
+                    {{ report.get_status_display }}
+                </span>
+            </div>
+            {% empty %}
+            <p class="text-muted small">Aucun signalement récent</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+{# ---- TABLEAU DES SIGNALEMENTS ---- #}
+<div class="card p-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="fw-bold mb-0"><i class="fas fa-table me-2 text-success"></i>Tous les signalements</h6>
+        <a href="{% url 'reports:report_list' %}" class="btn btn-outline-success btn-sm">Voir tout</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead style="background: #f8fffe;">
+                <tr>
+                    <th class="small text-muted">#</th>
+                    <th class="small text-muted">Titre</th>
+                    <th class="small text-muted">Catégorie</th>
+                    <th class="small text-muted">Auteur</th>
+                    <th class="small text-muted">Statut</th>
+                    <th class="small text-muted">Date</th>
+                    <th class="small text-muted">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for report in recent_reports %}
+                <tr>
+                    <td><small class="text-muted">#{{ report.pk }}</small></td>
+                    <td><small class="fw-semibold">{{ report.title|truncatechars:35 }}</small></td>
+                    <td><small>{{ report.get_category_display|truncatechars:25 }}</small></td>
+                    <td><small>{{ report.author.username }}</small></td>
+                    <td>
+                        <span class="badge" style="background: {% if report.status == 'PENDING' %}#f39c12{% elif report.status == 'IN_PROGRESS' %}#3498db{% else %}#27ae60{% endif %}; color: white;">
+                            {{ report.get_status_display }}
+                        </span>
+                    </td>
+                    <td><small class="text-muted">{{ report.created_at|date:"d/m/Y" }}</small></td>
+                    <td>
+                        <a href="{% url 'reports:report_detail' report.pk %}" class="btn btn-outline-success btn-sm">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center text-muted py-4">Aucun signalement</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{# ---- CHART.JS ---- #}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Graphique Donut — Statuts
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['En attente', 'En traitement', 'Résolus'],
+        datasets: [{
+            data: [{{ stats.pending }}, {{ stats.in_progress }}, {{ stats.resolved }}],
+            backgroundColor: ['#f39c12', '#3498db', '#27ae60'],
+            borderWidth: 0,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: { position: 'bottom' }
+        },
+        cutout: '65%'
+    }
+});
+
+// Graphique Barres — Catégories
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+new Chart(categoryCtx, {
+    type: 'bar',
+    data: {
+        labels: [{% for cat in category_stats %}'{{ cat.label }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        datasets: [{
+            label: 'Signalements',
+            data: [{% for cat in category_stats %}{{ cat.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            backgroundColor: '#40916c',
+            borderRadius: 8,
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: { legend: { display: false } },
+        scales: {
+            y: { beginAtZero: true, ticks: { stepSize: 1 } },
+            x: { ticks: { font: { size: 10 } } }
+        }
+    }
+});
+</script>
+
+{% endblock %}

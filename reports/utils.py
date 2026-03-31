@@ -12,12 +12,18 @@ def get_eco_advice(category, description):
                 "Authorization": f"Bearer {settings.OPENROUTER_API_KEY}",
                 "Content-Type": "application/json",
             },
-            data=json.dumps({
+            data=json.dumps({       
                 "model": "google/gemini-2.0-flash-001",
                 "messages": [{"role": "user", "content": prompt}]
             })
         )
         data = response.json()
         return data['choices'][0]['message']['content']
-    except Exception:
-        return "On a pas encore ajoutee l'IA !"
+    except Exception as e:
+        # Imprime l'erreur pour la voir dans les logs
+        print(f"Erreur lors de l'appel à OpenRouter : {e}")
+        # Si la réponse existe, affiche aussi le contenu
+        if 'response' in locals():
+            print(f"Statut HTTP : {response.status_code}")
+            print(f"Réponse : {response.text}")
+        return "Essaie de contacter l'administration !"

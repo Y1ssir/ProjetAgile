@@ -4,7 +4,7 @@ from .models import Report
 class ReportForm(forms.ModelForm):
     class Meta:
         model = Report
-        fields = ['title', 'description', 'category', 'image']
+        fields = ['title', 'description', 'category','location', 'image']
         
         widgets = {
             'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Décrivez le problème...'}),

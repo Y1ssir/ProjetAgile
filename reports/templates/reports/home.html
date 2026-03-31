@@ -1,0 +1,349 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Campus Éco-IA — Signalement Environnemental</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* HERO SECTION */
+        .hero {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1b4332 0%, #2d6a4f 40%, #40916c 100%);
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::before {
+            content: '';
+            position: absolute;
+            width: 600px; height: 600px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 50%;
+            top: -200px; right: -100px;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            width: 400px; height: 400px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+            bottom: -150px; left: -100px;
+        }
+        .hero-content { position: relative; z-index: 2; }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; color: white; line-height: 1.2; }
+        .hero h1 span { color: #95d5b2; }
+        .hero p { font-size: 1.2rem; color: rgba(255,255,255,0.8); max-width: 600px; }
+        .btn-hero {
+            background: white; color: #2d6a4f;
+            padding: 14px 36px; border-radius: 50px;
+            font-weight: 700; font-size: 1.1rem;
+            text-decoration: none; display: inline-block;
+            transition: all 0.3s; border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        }
+        .btn-hero:hover { transform: translateY(-3px); box-shadow: 0 8px 30px rgba(0,0,0,0.3); color: #1b4332; }
+        .btn-hero-outline {
+            background: transparent; color: white;
+            padding: 14px 36px; border-radius: 50px;
+            font-weight: 600; font-size: 1.1rem;
+            text-decoration: none; display: inline-block;
+            border: 2px solid rgba(255,255,255,0.5);
+            transition: all 0.3s;
+        }
+        .btn-hero-outline:hover { background: rgba(255,255,255,0.1); color: white; }
+
+        /* STATS CARDS */
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+            color: white;
+        }
+        .stat-card .number {
+            font-size: 2.5rem; font-weight: 800;
+            display: block;
+        }
+        .stat-card .label { font-size: 0.9rem; opacity: 0.8; }
+
+        /* FEATURES SECTION */
+        .features { padding: 80px 0; background: #f8fffe; }
+        .feature-card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            text-align: center;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            transition: transform 0.3s;
+            height: 100%;
+        }
+        .feature-card:hover { transform: translateY(-5px); }
+        .feature-icon {
+            width: 64px; height: 64px;
+            background: linear-gradient(135deg, #d8f3dc, #b7e4c7);
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; margin: 0 auto 16px;
+        }
+
+        /* HOW IT WORKS */
+        .how-it-works { padding: 80px 0; background: white; }
+        .step-number {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #2d6a4f, #40916c);
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-weight: 800; font-size: 1.2rem;
+            margin: 0 auto 16px;
+        }
+
+        /* CTA SECTION */
+        .cta-section {
+            background: linear-gradient(135deg, #1b4332, #2d6a4f);
+            padding: 80px 0; text-align: center; color: white;
+        }
+
+        /* NAVBAR */
+        .top-nav {
+            position: absolute; top: 0; left: 0; right: 0;
+            padding: 20px 0; z-index: 10;
+        }
+        .nav-brand { color: white; font-weight: 800; font-size: 1.3rem; text-decoration: none; }
+        .nav-brand:hover { color: #95d5b2; }
+
+        /* COUNTER ANIMATION */
+        .counter { transition: all 0.3s; }
+    </style>
+</head>
+<body>
+
+{# ---- NAVBAR ---- #}
+<nav class="top-nav">
+    <div class="container d-flex justify-content-between align-items-center">
+        <a href="/" class="nav-brand">🌱 Campus Éco-IA</a>
+        <div class="d-flex gap-2 align-items-center">
+            {% if user.is_authenticated %}
+                <span style="color:rgba(255,255,255,0.8); font-size:0.9rem;">
+                    👋 Bonjour, {{ user.username }}
+                </span>
+                <a href="{% url 'reports:report_list' %}" class="btn-hero-outline">
+                    <i class="fas fa-list me-1"></i> Signalements
+                </a>
+                <a href="{% url 'reports:report_create' %}" class="btn-hero">
+                    <i class="fas fa-plus me-1"></i> Signaler
+                </a>
+               <form method="POST" action="{% url 'logout' %}" style="display:inline;">
+    {% csrf_token %}
+    <button type="submit" class="btn-hero-outline" 
+            style="background:transparent; cursor:pointer;">
+        Déconnexion
+    </button>
+</form>
+            {% else %}
+                <form method="POST" action="{% url 'login' %}" 
+                      class="d-flex gap-2 align-items-center">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="/">
+                    <input type="text" name="username" placeholder="Utilisateur"
+                           style="padding:8px 14px; border-radius:50px; border:none; 
+                                  font-size:0.85rem; width:130px; outline:none;">
+                    <input type="password" name="password" placeholder="Mot de passe"
+                           style="padding:8px 14px; border-radius:50px; border:none; 
+                                  font-size:0.85rem; width:130px; outline:none;">
+                    <button type="submit" class="btn-hero" 
+                            style="padding:8px 20px; font-size:0.9rem;">
+                        Connexion
+                    </button>
+                </form>
+                <a href="{% url 'register' %}" class="btn-hero-outline">
+                    S'inscrire
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</nav>
+
+{# ---- HERO ---- #}
+<section class="hero">
+    <div class="container hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-7">
+                <div class="mb-3">
+                    <span style="background: rgba(255,255,255,0.15); color: white; padding: 6px 16px; border-radius: 50px; font-size: 0.9rem;">
+                        🎓 ENSA Campus — Système Éco-Responsable
+                    </span>
+                </div>
+                <h1 class="mb-4">
+                    Signalez les problèmes<br>
+                    <span>environnementaux</span><br>
+                    de votre campus
+                </h1>
+                <p class="mb-5">
+                    Une plateforme intelligente alimentée par l'IA pour aider votre campus à devenir plus écologique.
+                    Signalez, suivez et résolvez les problèmes environnementaux ensemble.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'reports:report_create' %}" class="btn-hero">
+                            <i class="fas fa-plus me-2"></i>Nouveau signalement
+                        </a>
+                        <a href="{% url 'reports:report_list' %}" class="btn-hero-outline">
+                            Voir les signalements
+                        </a>
+                    {% else %}
+                        <a href="{% url 'register' %}" class="btn-hero">
+                            <i class="fas fa-leaf me-2"></i>Commencer maintenant
+                        </a>
+                        <a href="{% url 'login' %}" class="btn-hero-outline">
+                            Se connecter
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {# Stats flottantes #}
+            <div class="col-lg-5 mt-5 mt-lg-0">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="stat-card">
+                            <span class="number counter" data-target="{{ stats.total }}">0</span>
+                            <span class="label">Total signalements</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card">
+                            <span class="number counter" data-target="{{ stats.resolved }}">0</span>
+                            <span class="label">Problèmes résolus</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card">
+                            <span class="number counter" data-target="{{ stats.pending }}">0</span>
+                            <span class="label">En attente</span>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="stat-card">
+                            <span class="number counter" data-target="{{ stats.in_progress }}">0</span>
+                            <span class="label">En traitement</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ---- FEATURES ---- #}
+<section class="features">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold" style="color: #1b4332;">Pourquoi utiliser Campus Éco-IA ?</h2>
+            <p class="text-muted">Une solution complète pour un campus plus vert</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h5 class="fw-bold" style="color: #1b4332;">Conseils IA</h5>
+                    <p class="text-muted small">Chaque signalement reçoit automatiquement un conseil écologique personnalisé grâce à l'intelligence artificielle.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h5 class="fw-bold" style="color: #1b4332;">Suivi en temps réel</h5>
+                    <p class="text-muted small">Suivez l'état de vos signalements de "En attente" jusqu'à "Résolu" avec des mises à jour en temps réel.</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h5 class="fw-bold" style="color: #1b4332;">Impact collectif</h5>
+                    <p class="text-muted small">Chaque signalement contribue à rendre le campus plus écologique. Ensemble, on fait la différence !</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ---- HOW IT WORKS ---- #}
+<section class="how-it-works">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="fw-bold" style="color: #1b4332;">Comment ça marche ?</h2>
+        </div>
+        <div class="row g-4 text-center">
+            <div class="col-md-3">
+                <div class="step-number">1</div>
+                <h6 class="fw-bold">Créez un compte</h6>
+                <p class="text-muted small">Inscrivez-vous en 30 secondes avec votre email universitaire.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step-number">2</div>
+                <h6 class="fw-bold">Signalez le problème</h6>
+                <p class="text-muted small">Décrivez le problème, ajoutez une photo et localisez-le sur le campus.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step-number">3</div>
+                <h6 class="fw-bold">L'IA analyse</h6>
+                <p class="text-muted small">Notre IA génère automatiquement un conseil écologique adapté.</p>
+            </div>
+            <div class="col-md-3">
+                <div class="step-number">4</div>
+                <h6 class="fw-bold">Suivi & Résolution</h6>
+                <p class="text-muted small">L'équipe traite le signalement et vous êtes notifié de la résolution.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+{# ---- CTA ---- #}
+<section class="cta-section">
+    <div class="container">
+        <h2 class="fw-bold mb-3">Prêt à rendre votre campus plus vert ?</h2>
+        <p class="mb-4" style="opacity: 0.8;">Rejoignez la communauté éco-responsable de votre campus</p>
+        {% if user.is_authenticated %}
+            <a href="{% url 'reports:report_create' %}" class="btn-hero">
+                <i class="fas fa-plus me-2"></i>Créer un signalement
+            </a>
+        {% else %}
+            <a href="{% url 'register' %}" class="btn-hero">
+                <i class="fas fa-leaf me-2"></i>S'inscrire gratuitement
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Animation des compteurs
+document.addEventListener('DOMContentLoaded', function() {
+    const counters = document.querySelectorAll('.counter');
+    counters.forEach(counter => {
+        const target = parseInt(counter.getAttribute('data-target')) || 0;
+        let current = 0;
+        const step = Math.ceil(target / 30);
+        const timer = setInterval(() => {
+            current += step;
+            if (current >= target) {
+                counter.textContent = target;
+                clearInterval(timer);
+            } else {
+                counter.textContent = current;
+            }
+        }, 50);
+    });
+});
+</script>
+</body>
+</html>

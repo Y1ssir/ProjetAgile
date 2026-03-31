@@ -1,0 +1,230 @@
+{% extends "reports/base.html" %}
+{% load widget_tweaks %}
+
+{% block title %}Nouveau Signalement{% endblock %}
+
+{% block content %}
+
+{# ============================================================ #}
+{# DASHBOARD STATS - Signalements en temps réel                 #}
+{# ============================================================ #}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card p-3 text-center border-0" style="background: linear-gradient(135deg, #fff3e0, #ffe0b2);">
+            <div style="font-size: 2rem;">⏳</div>
+            <h3 class="fw-bold text-warning mb-0">{{ stats.pending }}</h3>
+            <small class="text-muted fw-semibold">En attente</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center border-0" style="background: linear-gradient(135deg, #e3f2fd, #bbdefb);">
+            <div style="font-size: 2rem;">🔄</div>
+            <h3 class="fw-bold text-primary mb-0">{{ stats.in_progress }}</h3>
+            <small class="text-muted fw-semibold">En traitement</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card p-3 text-center border-0" style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9);">
+            <div style="font-size: 2rem;">✅</div>
+            <h3 class="fw-bold text-success mb-0">{{ stats.resolved }}</h3>
+            <small class="text-muted fw-semibold">Résolus</small>
+        </div>
+    </div>
+</div>
+
+{# ============================================================ #}
+{# FORMULAIRE PRINCIPAL                                          #}
+{# ============================================================ #}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card p-4">
+            <h2 class="mb-1 text-success fw-bold">
+                <i class="fas fa-leaf me-2"></i>Nouveau Signalement Éco
+            </h2>
+            <p class="text-muted mb-4">Signalez un problème environnemental sur le campus</p>
+
+            <form method="POST" action="" enctype="multipart/form-data" id="reportForm">
+                {% csrf_token %}
+
+                {# --- Titre --- #}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-heading me-1 text-success"></i>Titre du signalement *
+                    </label>
+                    {{ form.title|add_class:"form-control"|attr:"placeholder:Ex: Lumière allumée dans salle vide" }}
+                    {% if form.title.errors %}
+                        <div class="text-danger small mt-1">{{ form.title.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                {# --- Catégorie --- #}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-tag me-1 text-success"></i>Catégorie *
+                    </label>
+                    {{ form.category|add_class:"form-select" }}
+                    {% if form.category.errors %}
+                        <div class="text-danger small mt-1">{{ form.category.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                {# --- Localisation --- #}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-map-marker-alt me-1 text-success"></i>Localisation *
+                    </label>
+                    {{ form.location|add_class:"form-control"|attr:"placeholder:Ex: Bâtiment B, 2ème étage" }}
+                    {% if form.location.errors %}
+                        <div class="text-danger small mt-1">{{ form.location.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                {# --- Description avec compteur de caractères --- #}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-align-left me-1 text-success"></i>Description *
+                    </label>
+                    {{ form.description|add_class:"form-control"|attr:"id:descriptionField"|attr:"maxlength:500"|attr:"rows:4"|attr:"placeholder:Décrivez le problème..." }}
+                    {# Compteur de caractères #}
+                    <div class="d-flex justify-content-between mt-1">
+                        <small class="text-muted" id="charFeedback">0 caractère</small>
+                        <small class="text-muted"><span id="charCount">0</span> / 500</small>
+                    </div>
+                    {# Barre de progression des caractères #}
+                    <div class="progress mt-1" style="height: 4px;">
+                        <div class="progress-bar bg-success" id="charProgressBar" style="width: 0%; transition: width 0.2s;"></div>
+                    </div>
+                    {% if form.description.errors %}
+                        <div class="text-danger small mt-1">{{ form.description.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                {# --- Image --- #}
+                <div class="mb-4">
+                    <label class="form-label fw-semibold">
+                        <i class="fas fa-camera me-1 text-success"></i>Photo (optionnel)
+                    </label>
+                    {{ form.image|add_class:"form-control"|attr:"id:imageInput"|attr:"accept:image/*" }}
+                    {# Aperçu image #}
+                    <div id="imagePreview" class="mt-2 d-none">
+                        <img id="previewImg" src="" class="img-fluid rounded" style="max-height: 200px;" alt="Aperçu">
+                    </div>
+                    {% if form.image.errors %}
+                        <div class="text-danger small mt-1">{{ form.image.errors.0 }}</div>
+                    {% endif %}
+                </div>
+
+                {# --- Barre de progression d'envoi --- #}
+                <div id="submitProgress" class="mb-3 d-none">
+                    <small class="text-muted fw-semibold" id="progressLabel">Envoi en cours...</small>
+                    <div class="progress mt-1" style="height: 8px;">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-success" 
+                             id="submitProgressBar" style="width: 0%;"></div>
+                    </div>
+                </div>
+
+                {# --- Boutons --- #}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-eco px-4 py-2" id="submitBtn">
+                        <i class="fas fa-paper-plane me-2"></i>Envoyer le signalement
+                    </button>
+                    <a href="{% url 'reports:report_list' %}" class="btn btn-outline-secondary px-4 py-2">
+                        Annuler
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+{# ============================================================ #}
+{# JAVASCRIPT - Compteur + Barre de progression + Aperçu image  #}
+{# ============================================================ #}
+<script>
+// ---- 1. COMPTEUR DE CARACTÈRES ----
+const descField = document.getElementById('descriptionField');
+const charCount = document.getElementById('charCount');
+const charFeedback = document.getElementById('charFeedback');
+const charProgressBar = document.getElementById('charProgressBar');
+const MAX_CHARS = 500;
+
+descField.addEventListener('input', function() {
+    const count = this.value.length;
+    const percent = (count / MAX_CHARS) * 100;
+
+    // Met à jour le compteur
+    charCount.textContent = count;
+
+    // Feedback texte
+    if (count === 0) charFeedback.textContent = '0 caractère';
+    else if (count < 50) charFeedback.textContent = 'Trop court, décrivez mieux...';
+    else if (count < 150) charFeedback.textContent = 'Bien, continuez...';
+    else charFeedback.textContent = '✅ Bonne description !';
+
+    // Couleur de la barre selon la longueur
+    charProgressBar.style.width = percent + '%';
+    if (percent < 30) {
+        charProgressBar.className = 'progress-bar bg-danger';
+    } else if (percent < 60) {
+        charProgressBar.className = 'progress-bar bg-warning';
+    } else {
+        charProgressBar.className = 'progress-bar bg-success';
+    }
+});
+
+// ---- 2. APERÇU IMAGE ----
+const imageInput = document.getElementById('imageInput');
+const imagePreview = document.getElementById('imagePreview');
+const previewImg = document.getElementById('previewImg');
+
+imageInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            imagePreview.classList.remove('d-none');
+        };
+        reader.readAsDataURL(file);
+    } else {
+        imagePreview.classList.add('d-none');
+    }
+});
+
+// ---- 3. BARRE DE PROGRESSION D'ENVOI ----
+const form = document.getElementById('reportForm');
+const submitBtn = document.getElementById('submitBtn');
+const submitProgress = document.getElementById('submitProgress');
+const submitProgressBar = document.getElementById('submitProgressBar');
+const progressLabel = document.getElementById('progressLabel');
+
+form.addEventListener('submit', function() {
+    // Affiche la barre de progression
+    submitProgress.classList.remove('d-none');
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Envoi en cours...';
+
+    // Animation de progression
+    let width = 0;
+    const steps = [
+        { w: 30, label: 'Validation des données...' },
+        { w: 60, label: 'Upload de l\'image...' },
+        { w: 85, label: 'Sauvegarde en base...' },
+        { w: 100, label: 'Terminé !' },
+    ];
+    let step = 0;
+
+    const interval = setInterval(function() {
+        if (step < steps.length) {
+            submitProgressBar.style.width = steps[step].w + '%';
+            progressLabel.textContent = steps[step].label;
+            step++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 400);
+});
+</script>
+
+{% endblock %}

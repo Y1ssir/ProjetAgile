@@ -1,0 +1,69 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<h1>📊 Tableau de bord — Campus Éco-IA</h1>
+
+<!-- Stats Cards -->
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin:20px 0;">
+    {% for label, value, color in stats_list %}
+    <div style="background:{{ color }}; border-radius:12px; padding:20px; color:white; text-align:center;">
+        <div style="font-size:2rem; font-weight:bold;">{{ value }}</div>
+        <div style="font-size:0.9rem; opacity:0.85;">{{ label }}</div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Graphique -->
+<!-- Graphique -->
+<div style="background:white; border-radius:12px; padding:20px; margin:20px 0; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <h2>Signalements par statut</h2>
+    <div style="width:300px; height:300px; margin:0 auto;">
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<!-- Tableau récents -->
+<div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+    <h2>Derniers signalements</h2>
+    <table style="width:100%; border-collapse:collapse;">
+        <thead>
+            <tr style="background:#2D6A4F; color:white;">
+                <th style="padding:10px;">Titre</th>
+                <th style="padding:10px;">Catégorie</th>
+                <th style="padding:10px;">Statut</th>
+                <th style="padding:10px;">Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for r in recent_reports %}
+            <tr style="border-bottom:1px solid #eee;">
+                <td style="padding:8px;">{{ r.title }}</td>
+                <td style="padding:8px;">{{ r.get_category_display }}</td>
+                <td style="padding:8px;">{{ r.get_status_display }}</td>
+                <td style="padding:8px;">{{ r.created_at|date:"d/m/Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+new Chart(document.getElementById('statusChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['En attente', 'En traitement', 'Résolus'],
+        datasets: [{ 
+            data: [{{ stats.pending }}, {{ stats.in_progress }}, {{ stats.resolved }}],
+            backgroundColor: ['#E67E22', '#2980B9', '#27AE60'], 
+            borderWidth: 0 
+        }]
+    },
+    options: { 
+        responsive: false,
+        plugins: { legend: { position: 'bottom' } }, 
+        cutout: '65%' 
+    }
+});
+</script>
+{% endblock %}

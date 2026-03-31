@@ -1,0 +1,103 @@
+{% extends "reports/base.html" %}
+
+{% block title %}Liste des Signalements{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-success">
+        <i class="fas fa-list me-2"></i>Signalements éco-campus
+    </h2>
+    {% if user.is_authenticated %}
+    <a href="{% url 'reports:report_create' %}" class="btn btn-eco">
+        <i class="fas fa-plus me-2"></i>Nouveau signalement
+    </a>
+    {% endif %}
+</div>
+
+{# --- Filtres --- #}
+<div class="card p-3 mb-4">
+    <form method="GET" action="" class="row g-2 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label small fw-semibold">Filtrer par catégorie</label>
+            <select name="category" class="form-select form-select-sm">
+                <option value="">Toutes les catégories</option>
+                {% for value, label in categories %}
+                    <option value="{{ value }}" {% if request.GET.category == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label small fw-semibold">Statut</label>
+            <select name="status" class="form-select form-select-sm">
+                <option value="">Tous les statuts</option>
+                {% for value, label in statuses %}
+                    <option value="{{ value }}" {% if request.GET.status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-eco btn-sm w-100">Filtrer</button>
+        </div>
+        {% if request.GET.category or request.GET.status %}
+        <div class="col-md-2">
+            <a href="{% url 'reports:report_list' %}" class="btn btn-outline-secondary btn-sm w-100">Réinitialiser</a>
+        </div>
+        {% endif %}
+    </form>
+</div>
+
+{# --- Liste des signalements --- #}
+{% if reports %}
+    <div class="row g-3">
+        {% for report in reports %}
+        <div class="col-md-6 col-lg-4">
+            <div class="card h-100">
+                {% if report.image %}
+                    <img src="{{ report.image.url }}" class="card-img-top" 
+                         style="height: 180px; object-fit: cover; border-radius: 12px 12px 0 0;" 
+                         alt="{{ report.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h6 class="card-title fw-bold mb-0">{{ report.title }}</h6>
+                        {# Badge de statut coloré #}
+                        <span class="badge badge-{{ report.status }} text-white small ms-2">
+                            {{ report.get_status_display }}
+                        </span>
+                    </div>
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-tag me-1"></i>{{ report.get_category_display }}
+                    </p>
+                    <p class="text-muted small mb-2">
+                        <i class="fas fa-map-marker-alt me-1"></i>{{ report.location }}
+                    </p>
+                    <p class="card-text small text-truncate">{{ report.description }}</p>
+                </div>
+                <div class="card-footer bg-transparent d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="fas fa-user me-1"></i>{{ report.author.username }}
+                    </small>
+                    <a href="{% url 'reports:report_detail' report.pk %}" class="btn btn-outline-success btn-sm">
+                        Voir <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <div class="text-center py-5 text-muted">
+        <i class="fas fa-leaf fa-3x mb-3 text-success opacity-25"></i>
+        <p>Aucun signalement pour le moment.</p>
+        {% if user.is_authenticated %}
+        <a href="{% url 'reports:report_create' %}" class="btn btn-eco">
+            Créer le premier signalement
+        </a>
+        {% endif %}
+    </div>
+{% endif %}
+{% endblock %}

@@ -9,10 +9,6 @@ from .utils import get_eco_advice
 from .forms import ReportForm
 from .models import Report
 
-
-# ============================================================
-# HELPER : Stats globales réutilisables partout
-# ============================================================
 def get_stats():
     total = Report.objects.count()
     resolved = Report.objects.filter(status='RESOLVED').count()
@@ -24,17 +20,10 @@ def get_stats():
         'resolution_rate': round((resolved / total * 100), 1) if total > 0 else 0,
     }
 
-
-# ============================================================
-# PAGE D'ACCUEIL
-# ============================================================
 def home(request):
     return render(request, 'reports/home.html', {'stats': get_stats()})
 
 
-# ============================================================
-# INSCRIPTION
-# ============================================================
 def register(request):
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -47,9 +36,6 @@ def register(request):
     return render(request, 'reports/register.html', {'form': form})
 
 
-# ============================================================
-# TABLEAU DE BORD ADMIN
-# ============================================================
 @login_required
 def dashboard(request):
     # Stats par catégorie pour le graphique
@@ -69,9 +55,6 @@ def dashboard(request):
     })
 
 
-# ============================================================
-# FORMULAIRE CRÉATION
-# ============================================================
 @login_required
 def report_create(request):
     if request.method == 'POST':
@@ -79,7 +62,11 @@ def report_create(request):
         if form.is_valid():
             report = form.save(commit=False)
             report.author = request.user
+            advice = get_eco_advice(report.category, report.description)
+            report.ai_advice = advice 
+
             report.save()
+            
             return redirect('reports:report_success')
     else:
         form = ReportForm()
@@ -120,8 +107,6 @@ def report_detail(request, pk):
     print("Clé API dans la vue :", settings.OPENROUTER_API_KEY)
     print("Clé depuis os.environ :", os.environ.get("OPENROUTER_API_KEY"))
     report = get_object_or_404(Report, pk=pk)
-    advice = get_eco_advice(report.get_category_display(), report.description)
     return render(request, 'reports/report_detail.html', {
         'report': report,
-        'advice': advice,
     })

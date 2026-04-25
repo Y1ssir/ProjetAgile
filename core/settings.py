@@ -17,6 +17,8 @@ from dotenv import load_dotenv
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(os.path.join(BASE_DIR, 'settings.env'))
+OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
+OPENROUTER_API_KEY = "sk-or-v1-ta-vraie-cle-ici"
 
 
 # Quick-start development settings - unsuitable for production

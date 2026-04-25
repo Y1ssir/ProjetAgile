@@ -5,6 +5,7 @@ from django.urls import path
 from django.shortcuts import render
 from django.db.models import Count
 from .models import Report
+from django.utils.safestring import mark_safe
 
 
 # ============================================================
@@ -87,7 +88,7 @@ class ReportAdmin(admin.ModelAdmin):
                 'border-radius:6px; text-decoration:none; font-size:11px;">✅ Résoudre</a>',
                 obj.pk
             )
-        return format_html('<span style="color:#27AE60; font-size:12px;">✅ Terminé</span>')
+        return mark_safe('<span style="color:#27AE60; font-size:12px;">✅ Terminé</span>')
     changer_statut.short_description = "Action"
 
     actions = ['marquer_en_cours', 'marquer_resolu', 'marquer_en_attente']

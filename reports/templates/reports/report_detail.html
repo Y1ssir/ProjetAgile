@@ -51,13 +51,21 @@
     </div>
 
     {# --- Conseil IA --- #}
-    <div class="col-md-4">
-        <div class="card p-4 border-success">
-            <h5 class="fw-bold text-success">
-                <i class="fas fa-robot me-2"></i>Conseil IA
-            </h5>
-            <p class="small">{{ advice }}</p>
-        </div>
+{# --- Conseil IA --- #}
+<div class="col-md-4">
+    <div class="card p-4 border-success">
+        <h5 class="fw-bold text-success">
+            <i class="fas fa-robot me-2"></i>Conseil IA
+        </h5>
+        {% if report.ai_advice %}
+            <p class="small">{{ report.ai_advice|linebreaks }}</p>
+            <hr>
+        {% else %}
+            <div class="alert alert-warning small">
+                <i class="fas fa-exclamation-triangle me-1"></i>
+                Aucun conseil IA disponible pour ce rapport.
+            </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}

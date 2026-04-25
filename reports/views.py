@@ -30,7 +30,7 @@ def register(request):
         if form.is_valid():
             user = form.save()
             login(request, user)
-            return redirect('dashboard')
+            return redirect('reports') 
     else:
         form = UserCreationForm()
     return render(request, 'reports/register.html', {'form': form})

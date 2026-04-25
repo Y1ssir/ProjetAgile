@@ -124,5 +124,5 @@ MEDIA_URL='/media/'
 MEDIA_ROOT=os.path.join(BASE_DIR, 'media')
 OPENROUTER_API_KEY = os.getenv('OPENROUTER_API_KEY')
 
-LOGIN_REDIRECT_URL = '/dashboard/'
+LOGIN_REDIRECT_URL = 'reports'
 LOGOUT_REDIRECT_URL = '/'

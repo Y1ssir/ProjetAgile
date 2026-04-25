@@ -5,96 +5,803 @@
 {% block branding %}
 <h1 id="site-name">
     <a href="{% url 'admin:index' %}">
-        🌱 Campus Éco-IA — Admin
+        <span class="logo-icon">🌱</span>
+        <span class="logo-text">Campus Éco-IA</span>
+        <span class="logo-badge">Admin</span>
     </a>
 </h1>
 {% endblock %}
 
 {% block extrastyle %}
 {{ block.super }}
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
-    /* ---- COULEURS VERTES ---- */
-    #header {
-        background: linear-gradient(135deg, #1B4332, #2D6A4F) !important;
-        color: white !important;
-    }
-    #header a, #header a:visited {
-        color: #95D5B2 !important;
-    }
-    div.breadcrumbs {
-        background: #2D6A4F !important;
-        color: #D8F3DC !important;
-    }
-    div.breadcrumbs a {
-        color: #95D5B2 !important;
-    }
-    /* ---- SIDEBAR ---- */
-    #nav-sidebar {
-        background: #1B4332 !important;
-    }
-    #nav-sidebar a {
-        color: #D8F3DC !important;
-    }
-    #nav-sidebar a:hover {
-        background: #2D6A4F !important;
-    }
-    /* ---- BOUTONS ---- */
-    .button, input[type=submit], input[type=button], .submit-row input {
-        background: #2D6A4F !important;
-        border-color: #1B4332 !important;
-        color: white !important;
-        border-radius: 6px !important;
-    }
-    .button:hover, input[type=submit]:hover {
-        background: #1B4332 !important;
-    }
-    .button.default {
-        background: #40916C !important;
-    }
-    /* ---- MODULES ---- */
-    .module caption, .inline-group h2 {
-    background: #2D6A4F !important;
+/* ═══════════════════════════════════════════════
+   VARIABLES
+═══════════════════════════════════════════════ */
+:root {
+    --green-900: #1B4332;
+    --green-800: #2D6A4F;
+    --green-600: #40916C;
+    --green-400: #74C69D;
+    --green-100: #D8F3DC;
+    --green-50:  #F0FFF4;
+    --surface:   #ffffff;
+    --bg:        #f4f7f5;
+    --text:      #111827;   /* quasi-noir pour contraste maximal */
+    --muted:     #374151;   /* gris foncé lisible */
+    --border:    #e2ede7;
+    --radius:    12px;
+    --shadow:    0 2px 12px rgba(27,67,50,0.08);
+}
+
+/* ═══════════════════════════════════════════════
+   BASE
+═══════════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+    background: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+═══════════════════════════════════════════════ */
+#header {
+    background: linear-gradient(135deg, var(--green-900) 0%, var(--green-800) 100%) !important;
+    padding: 0 24px !important;
+    height: 64px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.25) !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+}
+
+#site-name a {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+    text-decoration: none !important;
     color: white !important;
+}
+
+.logo-icon { font-size: 1.6rem; }
+
+.logo-text {
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
+    color: white !important;
+    letter-spacing: -0.3px;
+}
+
+.logo-badge {
+    background: rgba(255,255,255,0.15);
+    color: var(--green-100);
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+#user-tools {
+    font-size: 0.82rem !important;
+    color: var(--green-100) !important;
+}
+
+#user-tools a, #user-tools a:visited {
+    color: var(--green-400) !important;
+    text-decoration: none !important;
+    font-weight: 600 !important;
+    transition: color 0.2s;
+}
+
+#user-tools a:hover { color: white !important; }
+
+/* ═══════════════════════════════════════════════
+   NAV BARRE PERSONNALISÉE
+═══════════════════════════════════════════════ */
+.eco-nav {
+    background: var(--green-800);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.eco-nav a {
+    color: rgba(255,255,255,0.7) !important;
+    text-decoration: none !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+    padding: 10px 14px !important;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+}
+
+.eco-nav a:hover {
+    color: white !important;
+    background: rgba(255,255,255,0.08);
+    border-bottom-color: var(--green-400);
+}
+
+.eco-nav a.active {
+    color: white !important;
+    border-bottom-color: var(--green-400);
+}
+
+/* ═══════════════════════════════════════════════
+   BREADCRUMBS
+═══════════════════════════════════════════════ */
+div.breadcrumbs {
+    background: var(--surface) !important;
+    color: var(--muted) !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 10px 24px !important;
+    font-size: 0.8rem !important;
+}
+
+div.breadcrumbs a {
+    color: var(--green-600) !important;
+    font-weight: 500 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════════ */
+#nav-sidebar {
+    background: var(--surface) !important;
+    border-right: 1px solid var(--border) !important;
+    padding: 12px 8px !important;
+}
+
+#nav-sidebar .current-app .section:last-child,
+#nav-sidebar .module {
+    background: transparent !important;
+    border: none !important;
+}
+
+#nav-sidebar .module caption {
+    background: var(--green-50) !important;
+    color: var(--green-800) !important;
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.8px !important;
+    padding: 8px 12px !important;
+    border-radius: 6px !important;
+    margin-bottom: 4px !important;
+}
+
+#nav-sidebar a {
+    color: var(--text) !important;
+    padding: 7px 12px !important;
+    border-radius: 8px !important;
+    font-size: 0.85rem !important;
+    font-weight: 500 !important;
+    display: block;
+    transition: all 0.15s;
+}
+
+#nav-sidebar a:hover {
+    background: var(--green-50) !important;
+    color: var(--green-800) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   CONTENU PRINCIPAL
+═══════════════════════════════════════════════ */
+#content {
+    padding: 24px 28px !important;
+}
+
+#content h1 {
+    font-size: 1.4rem !important;
+    font-weight: 700 !important;
+    color: var(--text) !important;
+    margin-bottom: 20px !important;
+}
+
+/* ═══════════════════════════════════════════════
+   MODULES / CARDS
+═══════════════════════════════════════════════ */
+.module {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    box-shadow: var(--shadow) !important;
+    overflow: hidden !important;
+    margin-bottom: 16px !important;
+}
+
+.module caption,
+.module h2,
+.inline-group h2 {
+    background: linear-gradient(135deg, var(--green-900), var(--green-800)) !important;
+    color: white !important;
+    font-size: 0.82rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 10px 16px !important;
     text-shadow: none !important;
-    font-weight: bold !important;
+    border-radius: 0 !important;
 }
-/* Texte des sections visible */
-.app-reports th, .app-auth th {
+
+/* ═══════════════════════════════════════════════
+   TABLEAU DE LISTE
+═══════════════════════════════════════════════ */
+#result_list {
+    border-radius: 0 !important;
+    overflow: hidden;
+}
+
+#result_list thead th {
+    background: var(--green-50) !important;
+    color: var(--green-800) !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 10px 14px !important;
+    border-bottom: 2px solid var(--border) !important;
+}
+
+#result_list thead th a {
+    color: var(--green-800) !important;
+}
+
+#result_list tbody tr {
+    transition: background 0.15s;
+}
+
+#result_list tbody tr:hover {
+    background: var(--green-50) !important;
+}
+
+#result_list td {
+    padding: 10px 14px !important;
+    font-size: 0.875rem !important;
+    border-bottom: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+#result_list td a {
+    color: var(--green-800) !important;
+    font-weight: 500 !important;
+}
+
+/* Checkbox */
+#result_list input[type="checkbox"] {
+    accent-color: var(--green-600);
+}
+
+/* ═══════════════════════════════════════════════
+   FORMULAIRES
+═══════════════════════════════════════════════ */
+.form-row {
+    border-bottom: 1px solid var(--border) !important;
+    padding: 14px 16px !important;
+}
+
+input[type=text], input[type=password], input[type=email],
+input[type=number], select, textarea {
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.875rem !important;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: white !important;
+    color: #111827 !important;
+}
+
+/* Select : taille suffisante pour afficher le texte complet */
+select {
+    height: auto !important;
+    min-height: 42px !important;
+    padding: 10px 36px 10px 12px !important;
+    line-height: 1.5 !important;
+    white-space: normal !important;
+    max-width: 100% !important;
+    width: auto !important;
+    min-width: 260px !important;
+    cursor: pointer !important;
+    -webkit-appearance: auto !important;
+    appearance: auto !important;
+}
+
+input[type=text]:focus, input[type=password]:focus,
+select:focus, textarea:focus {
+    border-color: var(--green-600) !important;
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(64,145,108,0.15) !important;
+}
+
+label {
+    color: #1f2937 !important;
+    font-size: 0.82rem !important;
+    font-weight: 600 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   BOUTONS
+═══════════════════════════════════════════════ */
+.button, input[type=submit], input[type=button],
+.submit-row input, .button.default {
+    background: linear-gradient(135deg, var(--green-800), var(--green-600)) !important;
     color: white !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 9px 18px !important;
+    font-family: 'Plus Jakarta Sans', sans-serif !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+    cursor: pointer !important;
+    transition: opacity 0.2s, transform 0.1s !important;
+    box-shadow: 0 2px 8px rgba(45,106,79,0.3) !important;
 }
-    /* ---- LIENS ---- */
-    a:link, a:visited {
-        color: #2D6A4F !important;
-    }
-    /* ---- TABLEAU ---- */
-    #result_list thead th {
-        background: #2D6A4F !important;
-        color: white !important;
-    }
-    #result_list tr:hover {
-        background: #F0FFF4 !important;
-    }
-    /* ---- MESSAGES ---- */
-    .success {
-        background: #D8F3DC !important;
-        color: #1B4332 !important;
-    }
-    /* ---- INDEX ---- */
-    .app-reports .section:nth-child(1) {
-        border-left: 4px solid #40916C !important;
-    }
+
+.button:hover, input[type=submit]:hover,
+input[type=button]:hover, .submit-row input:hover {
+    opacity: 0.9 !important;
+    transform: translateY(-1px) !important;
+}
+
+.button.default {
+    background: linear-gradient(135deg, var(--green-600), var(--green-400)) !important;
+}
+
+/* Delete button */
+.deletelink, a.deletelink {
+    background: #e74c3c !important;
+    border-radius: 8px !important;
+    color: white !important;
+    padding: 6px 14px !important;
+    font-weight: 600 !important;
+}
+
+/* Submit row */
+.submit-row {
+    background: var(--green-50) !important;
+    border-top: 1px solid var(--border) !important;
+    border-radius: 0 0 var(--radius) var(--radius) !important;
+    padding: 12px 16px !important;
+}
+
+/* ═══════════════════════════════════════════════
+   ACTIONS / FILTRES
+═══════════════════════════════════════════════ */
+.action-counter {
+    color: var(--green-600) !important;
+    font-weight: 600 !important;
+}
+
+#changelist-filter {
+    background: var(--surface) !important;
+    border-left: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+}
+
+#changelist-filter h2 {
+    background: linear-gradient(135deg, var(--green-900), var(--green-800)) !important;
+    color: white !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 10px 14px !important;
+    border-radius: var(--radius) var(--radius) 0 0 !important;
+}
+
+#changelist-filter h3 {
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    color: var(--muted) !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    padding: 10px 14px 4px !important;
+}
+
+#changelist-filter li a {
+    color: var(--green-800) !important;
+    font-size: 0.85rem !important;
+    padding: 4px 14px !important;
+    display: block;
+    border-radius: 6px;
+    transition: background 0.15s;
+}
+
+#changelist-filter li a:hover {
+    background: var(--green-50) !important;
+}
+
+#changelist-filter li.selected a {
+    color: white !important;
+    background: var(--green-600) !important;
+    border-radius: 6px !important;
+}
+
+/* ═══════════════════════════════════════════════
+   MESSAGES
+═══════════════════════════════════════════════ */
+.messagelist li {
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+}
+
+.messagelist .success {
+    background: var(--green-100) !important;
+    color: var(--green-900) !important;
+    border-left: 4px solid var(--green-600) !important;
+}
+
+.messagelist .error {
+    background: #fde8e8 !important;
+    color: #7f1d1d !important;
+    border-left: 4px solid #e74c3c !important;
+}
+
+.messagelist .warning {
+    background: #fef3cd !important;
+    color: #7d5a00 !important;
+    border-left: 4px solid #f39c12 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   INDEX PAGE — APP LIST
+═══════════════════════════════════════════════ */
+
+/* Toutes les lignes de la liste d'apps en blanc */
+#content-main .app-reports,
+#content-main .app-auth,
+#content-main .module.app-reports,
+#content-main .module.app-auth {
+    background: white !important;
+}
+
+#content-main .app-reports table,
+#content-main .app-auth table,
+#content-main .module table {
+    background: white !important;
+    width: 100% !important;
+}
+
+#content-main .app-reports tr,
+#content-main .app-auth tr,
+#content-main .module tr {
+    background: white !important;
+    color: #111827 !important;
+}
+
+#content-main .app-reports tr:hover,
+#content-main .app-auth tr:hover {
+    background: var(--green-50) !important;
+}
+
+#content-main .app-reports td,
+#content-main .app-auth td,
+#content-main .module td {
+    background: white !important;
+    color: #111827 !important;
+    padding: 10px 14px !important;
+    border-bottom: 1px solid var(--border) !important;
+}
+
+/* Liens Add et Change bien visibles */
+#content-main .app-reports td a,
+#content-main .app-auth td a,
+#content-main .module td a {
+    color: var(--green-800) !important;
+    font-weight: 600 !important;
+    text-decoration: none !important;
+}
+
+#content-main .app-reports td a:hover,
+#content-main .app-auth td a:hover {
+    color: var(--green-600) !important;
+    text-decoration: underline !important;
+}
+
+.app-reports th, .app-auth th {
+    color: var(--green-900) !important;
+    font-weight: 700 !important;
+    font-size: 0.8rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    background: var(--green-50) !important;
+}
+
+/* ═══════════════════════════════════════════════
+   RECENT ACTIONS — SUPPRIME LE FOND ROUGE
+═══════════════════════════════════════════════ */
+#recent-actions-module .actionlist li,
+#recent-actions-module .actionlist li a,
+.actionlist li,
+.actionlist li.deletelink,
+.actionlist li.addlink {
+    background: white !important;
+    color: #111827 !important;
+}
+
+.actionlist li {
+    border-bottom: 1px solid var(--border) !important;
+    padding: 8px 14px !important;
+    border-radius: 0 !important;
+}
+
+.actionlist li:last-child { border-bottom: none !important; }
+
+.actionlist li a {
+    color: var(--green-800) !important;
+    font-weight: 500 !important;
+    font-size: 0.85rem !important;
+}
+
+/* Icônes add/change/delete dans recent actions */
+.actionlist .addlink::before,
+.actionlist .changelink::before,
+.actionlist .deletelink::before {
+    background: transparent !important;
+}
+
+/* Supprime toute couleur de fond rouge/orange héritée */
+#recent-actions-module *[class*="delete"],
+#recent-actions-module *[class*="add"],
+.actionlist * {
+    background-color: transparent !important;
+}
+
+/* ═══════════════════════════════════════════════
+   RECENT ACTIONS (SIDEBAR DROITE)
+═══════════════════════════════════════════════ */
+#recent-actions-module {
+    background: var(--surface) !important;
+    border: 1px solid var(--border) !important;
+    border-radius: var(--radius) !important;
+    overflow: hidden !important;
+    box-shadow: var(--shadow) !important;
+}
+
+#recent-actions-module h2 {
+    background: linear-gradient(135deg, var(--green-900), var(--green-800)) !important;
+    color: white !important;
+    font-size: 0.78rem !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.6px !important;
+    padding: 10px 16px !important;
+}
+
+#recent-actions-module h3 {
+    font-size: 0.72rem !important;
+    font-weight: 700 !important;
+    color: var(--muted) !important;
+    text-transform: uppercase !important;
+    padding: 10px 14px 4px !important;
+}
+
+#recent-actions-module .actionlist li {
+    padding: 6px 14px !important;
+    border-bottom: 1px solid var(--border) !important;
+    font-size: 0.82rem !important;
+}
+
+#recent-actions-module .actionlist a {
+    color: var(--green-800) !important;
+    font-weight: 500 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   TABLEAU — FOND BLANC FORCÉ
+═══════════════════════════════════════════════ */
+
+/* Supprime tout fond sombre sur les lignes */
+#result_list tbody tr,
+#result_list tbody tr td,
+#result_list tbody tr th,
+#result_list tr.odd,
+#result_list tr.even,
+#result_list tr.row1,
+#result_list tr.row2,
+.results tbody tr,
+.results tbody td {
+    background-color: #ffffff !important;
+    color: #111827 !important;
+}
+
+/* Ligne alternée légèrement grisée */
+#result_list tbody tr:nth-child(even) {
+    background-color: #f9fafb !important;
+}
+
+/* Hover vert pâle */
+#result_list tbody tr:hover,
+#result_list tbody tr:hover td {
+    background-color: var(--green-50) !important;
+    color: #111827 !important;
+}
+
+/* Ligne sélectionnée (checkbox coché) */
+#result_list tbody tr.selected,
+#result_list tbody tr.selected td {
+    background-color: #ecfdf5 !important;
+    color: #111827 !important;
+}
+
+/* Tous les textes dans les cellules */
+#result_list tbody td,
+#result_list tbody td *,
+#result_list tbody td a,
+#result_list tbody td a:visited {
+    color: #111827 !important;
+}
+
+/* Zone d'actions (barre au-dessus du tableau) */
+.actions, #changelist .actions {
+    background: #f9fafb !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+    padding: 10px 14px !important;
+    color: #111827 !important;
+}
+
+.actions select, .actions label, .actions span {
+    color: #111827 !important;
+    background: white !important;
+}
+
+/* Barre de recherche */
+#changelist-search input[type="text"] {
+    background: white !important;
+    color: #111827 !important;
+    border: 1px solid var(--border) !important;
+    border-radius: 8px !important;
+}
+
+/* Zone au-dessus du tableau (toolbar) */
+#toolbar, #changelist-search {
+    background: white !important;
+    border-bottom: 1px solid var(--border) !important;
+    padding: 12px 0 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--green-400); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--green-600); }
+
+/* ═══════════════════════════════════════════════
+   TEXTE — CORRECTIONS CONTRASTE GLOBAL
+═══════════════════════════════════════════════ */
+
+/* Tous les textes courants en noir foncé */
+body, p, span, li, td, th, div, small,
+#content, #content-main, #content p,
+.help, .helptext,
+.form-row label,
+.form-row p,
+.aligned label,
+fieldset p,
+.module p,
+.module li {
+    color: var(--text) !important;
+}
+
+/* Labels de formulaire bien visibles */
+label {
+    color: #1f2937 !important;
+    font-size: 0.85rem !important;
+    font-weight: 600 !important;
+}
+
+/* Texte d'aide sous les champs */
+.help, .helptext, p.help {
+    color: #4b5563 !important;
+    font-size: 0.8rem !important;
+}
+
+/* Titres h1 h2 h3 dans le contenu */
+#content h1, #content h2, #content h3, #content h4 {
+    color: #111827 !important;
+}
+
+/* Texte des lignes de tableau */
+#result_list td,
+#result_list td * {
+    color: #111827 !important;
+}
+
+/* Texte des champs d'action */
+.actions label,
+.actions select,
+.actions span {
+    color: #111827 !important;
+}
+
+/* Pagination */
+.paginator a, .paginator span {
+    color: #1f2937 !important;
+}
+
+/* Texte dans les modules index */
+.app-reports td, .app-auth td,
+.model-report td, .model-user td,
+table.model-report a, table.model-user a {
+    color: #111827 !important;
+}
+
+/* Texte de l'index admin (liste des apps) */
+#content-main .module table td a,
+#content-main .module table td {
+    color: #111827 !important;
+    font-weight: 500 !important;
+}
+
+/* ═══════════════════════════════════════════════
+   LIENS GLOBAUX
+═══════════════════════════════════════════════ */
+/* On ne touche PAS aux liens globalement pour éviter
+   de rendre illisibles les liens sur fond sombre */
+#content a:link,
+#content a:visited,
+#content-main a:link,
+#content-main a:visited {
+    color: var(--green-800) !important;
+    font-weight: 500;
+}
+
+#content a:hover,
+#content-main a:hover {
+    color: var(--green-600) !important;
+    text-decoration: underline;
+}
+
 </style>
 {% endblock %}
+
 {% block nav-global %}
-<div style="background:#1B4332; padding:10px 20px;">
-    <a href="/admin/dashboard/" 
-       style="color:#95D5B2; font-weight:bold; text-decoration:none; font-size:14px;">
+<nav class="eco-nav">
+    {# Home Django par défaut #}
+    <a href="{% url 'admin:index' %}"
+       class="{% if request.path == '/admin/' %}active{% endif %}">
+        🏠 Accueil
+    </a>
+
+    {# Dashboard personnalisé #}
+    <a href="/admin/dashboard/"
+       class="{% if request.path == '/admin/dashboard/' %}active{% endif %}">
         📊 Tableau de bord
     </a>
-    &nbsp;&nbsp;|&nbsp;&nbsp;
-    <a href="/reports/" 
-       style="color:#95D5B2; text-decoration:none; font-size:14px;">
+
+    {# Liste des signalements #}
+    <a href="/admin/reports/report/"
+       class="{% if '/reports/report/' in request.path %}active{% endif %}">
+        📋 Signalements
+    </a>
+    {# Lien vers le site public #}
+    <a href="/reports/" style="margin-left:auto;">
         🌱 Voir le site
     </a>
-</div>
+</nav>
 {% endblock %}

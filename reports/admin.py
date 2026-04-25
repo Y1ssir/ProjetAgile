@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 class CustomAdminSite(AdminSite):
     site_header = "🌱 Campus Éco-IA — Administration"
     site_title = "Campus Éco-IA Admin"
-    index_title = "Tableau de bord"
+    index_title = "Acceuil"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -24,21 +24,35 @@ class CustomAdminSite(AdminSite):
         return custom_urls + urls
 
     def dashboard_view(self, request):
+        # ── Stats globales (avec resolution_rate) ──────────────────
+        total       = Report.objects.count()
+        resolved    = Report.objects.filter(status='RESOLVED').count()
         stats = {
-            'total': Report.objects.count(),
-            'pending': Report.objects.filter(status='PENDING').count(),
-            'in_progress': Report.objects.filter(status='IN_PROGRESS').count(),
-            'resolved': Report.objects.filter(status='RESOLVED').count(),
+            'total'           : total,
+            'pending'         : Report.objects.filter(status='PENDING').count(),
+            'in_progress'     : Report.objects.filter(status='IN_PROGRESS').count(),
+            'resolved'        : resolved,
+            'resolution_rate' : round((resolved / total * 100), 1) if total > 0 else 0,
         }
-        category_data = Report.objects.values('category').annotate(count=Count('id'))
-        recent = Report.objects.all().order_by('-created_at')[:10]
+
+        # ── Catégories : labels lisibles ───────────────────────────
+        category_dict = dict(Report.CATEGORY_CHOICES)
+        category_stats = [
+            {
+                'label': category_dict.get(item['category'], item['category'])[:15],
+                'count': item['count'],
+            }
+            for item in Report.objects.values('category').annotate(count=Count('id'))
+        ]
+
+        # ── Signalements récents ────────────────────────────────────
+        recent_reports = Report.objects.select_related('author').order_by('-created_at')[:10]
+
         return render(request, 'admin/dashboard.html', {
-            'stats': stats,
-            'category_data': list(category_data),
-            'recent_reports': recent,
+            'stats'          : stats,
+            'category_stats' : category_stats,   # ← était 'category_data' avant !
+            'recent_reports' : recent_reports,
         })
-
-
 # ✅ IMPORTANT : créer l'instance et remplacer l'admin par défaut
 custom_admin = CustomAdminSite(name='custom_admin')
 

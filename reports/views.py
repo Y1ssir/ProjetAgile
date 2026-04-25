@@ -38,15 +38,38 @@ def register(request):
 
 @login_required
 def dashboard(request):
+    from django.db.models import Count
+    
+    # Stats générales
+    stats = {
+        'total': Report.objects.count(),
+        'pending': Report.objects.filter(status='PENDING').count(),
+        'in_progress': Report.objects.filter(status='IN_PROGRESS').count(),
+        'resolved': Report.objects.filter(status='RESOLVED').count(),
+    }
+    
+    # Calcul taux de résolution
+    if stats['total'] > 0:
+        stats['resolution_rate'] = round(stats['resolved'] / stats['total'] * 100, 1)
+    else:
+        stats['resolution_rate'] = 0
+
     # Stats par catégorie pour le graphique
-    category_data = Report.objects.values('category').annotate(count=Count('id'))
-    category_stats = []
     category_dict = dict(Report.CATEGORY_CHOICES)
-    for item in category_data:
-        category_stats.append({
+    category_data = Report.objects.values('category').annotate(count=Count('id'))
+    category_stats = [
+        {
             'label': category_dict.get(item['category'], item['category'])[:15],
             'count': item['count']
-        })
+        }
+        for item in category_data
+    ]
+
+    return render(request, 'reports/dashboard.html', {
+        'stats': stats,
+        'recent_reports': Report.objects.all().order_by('-created_at')[:10],
+        'category_stats': category_stats,
+    })
 
     return render(request, 'reports/dashboard.html', {
         'stats': get_stats(),
